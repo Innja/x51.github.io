@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="en_US">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>渗透测试中的Socks代理 - x51&#39;BLOG</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="与其感叹路难行，不如马上出发。">
+  
+  
+  
+
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">x51&#39;BLOG</a>
+    <div class="subtitle">与其感叹路难行，不如马上出发.</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">渗透测试中的Socks代理</h1>
+  </div>
+
+  <!-- 文章目录 -->
+  <ol class="toc"><li class="toc-item toc-level-6"><a class="toc-link" href="#Regeorg"><span class="toc-text">Regeorg</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#abptts"><span class="toc-text">abptts</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#其他"><span class="toc-text">其他</span></a></li></ol>
+
+  <div class="post-content">
+    <p>比较常见的一种情况，处于内网的机器，只映射一个Web服务到公网，通过Webshell看到的环境其实是在内网，这类目标一般不通外网，Beacon也不会回连，此时需要代理到目标内网环境。  </p>
+<p><img src="/images/pasted-92.png" alt="upload successful">  </p>
+<p>个人常用的工具有两个。</p>
+<h6 id="Regeorg"><a href="#Regeorg" class="headerlink" title="Regeorg"></a>Regeorg</h6><p><a href="https://github.com/sensepost/reGeorg">https://github.com/sensepost/reGeorg</a><br>环境：Python2.7<br>首先需要把目标对应的web脚本上传到服务器，jsp的站传tunnel.jsp，php传tunnel.php，然后在浏览器访问tunnel脚本看能否正常解析  </p>
+<p><img src="/images/pasted-41.png" alt="upload successful">  </p>
+<p>如果出现如上字符串说明可以成功解析，接下来在本地开启代理连接：</p>
+<p><img src="/images/pasted-43.png" alt="upload successful"><br>如上所示，代理在10086端口开启成功。<br>BTW：遇到WAF检测流量的情况使用Neo-Regeorg。</p>
+<h6 id="abptts"><a href="#abptts" class="headerlink" title="abptts"></a>abptts</h6><p><a href="https://github.com/nccgroup/ABPTTS">https://github.com/nccgroup/ABPTTS</a><br>服务端同样上传jsp/aspx代理脚本，访问确认正常解析，返回一个字符串代表成功解析，将端口转发到本地，可以直接使用，以下命令将该内网主机的3389转发到攻击机的33899端口。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python abpttsclient<span class="selector-class">.py</span> -c webshell/config<span class="selector-class">.txt</span> -u http:<span class="comment">//xxxxxx.com/abptts.jsp -f 127.0.0.1:33899/127.0.0.1:3389</span></span><br></pre></td></tr></table></figure></p>
+<p><img src="/images/pasted-45.png" alt="upload successful">  </p>
+<p>注：使用之前生成config文件：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python abpttsfactory<span class="selector-class">.py</span> -c config<span class="selector-class">.txt</span> -o /config/</span><br></pre></td></tr></table></figure></p>
+<p>如果目标主机是linux，可以先用abptts代理出目标的22端口，然后本地ssh客户端开启隧道进内网，实战中体验较好。(需拿到ssh密码或者开启了公钥登陆)</p>
+<p><img src="/images/pasted-46.png" alt="upload successful">  </p>
+<h6 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h6><p>待补充。</p>
+
+  </div>
+  <div class="post-meta">
+    <span class="post-time" style="color:#646060;font-size:13px">2019-07-31</span>
+  </div>
+
+  <div class="post-footer">
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+
+<!-- 评论插件 -->
+
+<footer>
+  2020
+  <span class="author">
+    x51
+  </span>
+</footer>
+
+
+    </div>
+  </body>
+</html>

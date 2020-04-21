@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="en_US">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>MSF+端口转发攻击内网MS17-010 - x51&#39;BLOG</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="与其感叹路难行，不如马上出发。">
+  
+  
+  
+
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">x51&#39;BLOG</a>
+    <div class="subtitle">与其感叹路难行，不如马上出发.</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">MSF+端口转发攻击内网MS17-010</h1>
+  </div>
+
+  <!-- 文章目录 -->
+  <ol class="toc"><li class="toc-item toc-level-6"><a class="toc-link" href="#前置假设"><span class="toc-text">前置假设</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#攻击流程"><span class="toc-text">攻击流程</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#后话"><span class="toc-text">后话</span></a></li></ol>
+
+  <div class="post-content">
+    <p>本文讨论在一种特定环境下MS17-010的利用方式。  </p>
+<h6 id="前置假设"><a href="#前置假设" class="headerlink" title="前置假设"></a>前置假设</h6><p><img src="/images/pasted-47.png" alt="upload successful"><br>A是攻击者MSF所在公网机器；<br>B是内网一台服务器，与A互通；<br>C是内网另一台服务器，与B互通，不通A，存在MS17-010漏洞；  </p>
+<h6 id="攻击流程"><a href="#攻击流程" class="headerlink" title="攻击流程"></a>攻击流程</h6><p>MS17-010的Payload（dll文件）需要反向连接攻击者IP，但C只能与B通信，Payload执行后是无法在MSF平台接到ReverseShell的，此时需要流量转发（端口转发）。<br>1、生成目标机器后门，反连Server设置成B的IP，端口4455；<br>2、B上开启端口转发，将本地4455的流量转发到A的4466端口，运行EXP；<br>3、A上开启MSF监听本机4466端口；<br>4、A上成功得到来自B机器任意端口的Meterpreter Session；  </p>
+<p><img src="/images/pasted-48.png" alt="upload successful">  </p>
+<p><img src="/images/pasted-49.png" alt="upload successful">  </p>
+<p><img src="/images/pasted-50.png" alt="upload successful">  </p>
+<h6 id="后话"><a href="#后话" class="headerlink" title="后话"></a>后话</h6><p>基本都是常规操作，但内网渗透中MS17010这样的场景遇到挺多，做个记录。</p>
+
+  </div>
+  <div class="post-meta">
+    <span class="post-time" style="color:#646060;font-size:13px">2019-09-29</span>
+  </div>
+
+  <div class="post-footer">
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+
+<!-- 评论插件 -->
+
+<footer>
+  2020
+  <span class="author">
+    x51
+  </span>
+</footer>
+
+
+    </div>
+  </body>
+</html>

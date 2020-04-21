@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="en_US">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>Cobalt Strike学习遇到的问题 - x51&#39;BLOG</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="与其感叹路难行，不如马上出发。">
+  
+  
+  
+
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">x51&#39;BLOG</a>
+    <div class="subtitle">与其感叹路难行，不如马上出发.</div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">Cobalt Strike学习遇到的问题</h1>
+  </div>
+
+  <!-- 文章目录 -->
+  
+
+  <div class="post-content">
+    <p>jad处理class的结果和jd-gui这类工具反编译结果不太一样，cobaltstrike.jar中的同一个class文件结果如下：</p>
+<p><img src="/images/pasted-1.png" alt="upload successful"></p>
+<p>回编的时候会报一些奇怪的错误，需要结合jd-gui和jad两者的结果做适当修改，以AggressorClient文件为例：</p>
+<p><img src="/images/pasted-3.png" alt="upload successful"></p>
+<p><img src="/images/pasted-4.png" alt="upload successful"></p>
+<p>定位到178行：</p>
+<p><img src="/images/pasted-5.png" alt="upload successful"></p>
+<p>尝试将这段for循环替换了一下，不再报错,重新打包后运行正常，修改结果也成功验证。</p>
+<p><img src="/images/pasted-6.png" alt="upload successful"></p>
+
+  </div>
+  <div class="post-meta">
+    <span class="post-time" style="color:#646060;font-size:13px">2019-02-11</span>
+  </div>
+
+  <div class="post-footer">
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+
+<!-- 评论插件 -->
+
+<footer>
+  2020
+  <span class="author">
+    x51
+  </span>
+</footer>
+
+
+    </div>
+  </body>
+</html>
